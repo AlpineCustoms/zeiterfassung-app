@@ -4,6 +4,10 @@ export default function App() {
   const [running, setRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [seconds, setSeconds] = useState(0);
+  const [workerName, setWorkerName] = useState(() => {
+  const saved = localStorage.getItem("workerName");
+  return saved ? saved : "Simon";
+});
   const [entries, setEntries] = useState(() => {
     const saved = localStorage.getItem("entries");
     return saved ? JSON.parse(saved) : [];
@@ -12,39 +16,87 @@ export default function App() {
   const [showInput, setShowInput] = useState(false);
 
   useEffect(() => {
-    let interval;
-    if (running && startTime) {
-      interval = setInterval(() => {
-        setSeconds(Math.floor((Date.now() - startTime) / 1000));
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [running, startTime]);
+    
+  const savedRunning = localStorage.getItem("running") === "true";
+  const savedStartTime = localStorage.getItem("startTime");
 
+  if (savedRunning && savedStartTime) {
+    const parsedStart = Number(savedStartTime);
+    setRunning(true);
+    setStartTime(parsedStart);
+    setSeconds(Math.floor((Date.now() - parsedStart) / 1000));
+  }
+}, []);
+
+useEffect(() => {
+  let interval;
+
+  const updateSeconds = () => {
+    if (running && startTime) {
+      setSeconds(Math.floor((Date.now() - startTime) / 1000));
+    }
+  };
+  
   useEffect(() => {
-    localStorage.setItem("entries", JSON.stringify(entries));
-  }, [entries]);
+  localStorage.setItem("workerName", workerName);
+}, [workerName]);
+
+  if (running && startTime) {
+    updateSeconds();
+    interval = setInterval(updateSeconds, 1000);
+  }
+
+  const handleVisibilityChange = () => updateSeconds();
+  const handleFocus = () => updateSeconds();
+
+  document.addEventListener("visibilitychange", handleVisibilityChange);
+  window.addEventListener("focus", handleFocus);
+
+
+  return () => {
+    clearInterval(interval);
+    document.removeEventListener("visibilitychange", handleVisibilityChange);
+    window.removeEventListener("focus", handleFocus);
+  };
+}, [running, startTime]);
 
   const start = () => {
-    setStartTime(Date.now());
-    setRunning(true);
-  };
+  const now = Date.now();
+  setStartTime(now);
+  setRunning(true);
+
+  localStorage.setItem("running", "true");
+  localStorage.setItem("startTime", String(now));
+};
 
   const stop = () => {
-    setRunning(false);
-    setShowInput(true);
-  };
+  setRunning(false);
+  setShowInput(true);
+
+  localStorage.setItem("running", "false");
+};
 
   const save = () => {
-    const now = new Date();
+  const now = new Date();
 
-    const newEntry = {
-      time: seconds,
-      note: note,
-      date: now.toLocaleDateString(),
-      start: new Date(startTime).toLocaleTimeString(),
-      end: now.toLocaleTimeString(),
-    };
+  const newEntry = {
+    worker: workerName,
+    time: seconds,
+    note: note,
+    date: now.toLocaleDateString(),
+    start: new Date(startTime).toLocaleTimeString(),
+    end: now.toLocaleTimeString(),
+  };
+
+  setEntries([newEntry, ...entries]);
+  setNote("");
+  setSeconds(0);
+  setShowInput(false);
+  setStartTime(null);
+
+  localStorage.setItem("running", "false");
+  localStorage.removeItem("startTime");
+};
 
     setEntries([newEntry, ...entries]);
     setNote("");
@@ -60,21 +112,21 @@ export default function App() {
   };
 
   const exportCSV = (entries) => {
-    const header = "Datum;Start;Ende;Zeit (s);Beschreibung\n";
+  const header = "Mitarbeiter;Datum;Start;Ende;Zeit (s);Beschreibung\n";
 
-    const rows = entries
-      .map((e) => `${e.date};${e.start};${e.end};${e.time};${e.note}`)
-      .join("\n");
+  const rows = entries
+    .map((e) => `${e.worker};${e.date};${e.start};${e.end};${e.time};${e.note}`)
+    .join("\n");
 
-    const csvContent = "\uFEFF" + header + rows;
+  const csvContent = "\uFEFF" + header + rows;
 
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
 
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = "zeiterfassung.csv";
-    link.click();
-  };
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = "zeiterfassung.csv";
+  link.click();
+};
 
   const clearEntries = () => {
     const deleteEntry = (indexToDelete) => {
@@ -86,7 +138,7 @@ export default function App() {
     setEntries([]);
   }
 };
-
+const workers = ["Simon", "Loris", "Dominik", "Jannic"];
   return (
   <div
     style={{
@@ -118,6 +170,25 @@ export default function App() {
 
       <h2>{format(seconds)}</h2>
 
+<div style={{ marginBottom: 20 }}>
+  <label style={{ marginRight: 10 }}>Mitarbeiter:</label>
+  <select
+    value={workerName}
+    onChange={(e) => setWorkerName(e.target.value)}
+    style={{
+      padding: "8px 12px",
+      borderRadius: "8px",
+      border: "none",
+      fontWeight: "bold",
+    }}
+  >
+    {workers.map((worker) => (
+      <option key={worker} value={worker}>
+        {worker}
+      </option>
+    ))}
+  </select>
+</div>
       <button
   onClick={start}
   disabled={running}
@@ -130,8 +201,7 @@ export default function App() {
     color: "white",
     fontWeight: "bold",
     cursor: "pointer",
-    transform: "scale(1)",
-transition: "0.2s",
+    
   }}
 >
   Start
@@ -206,10 +276,9 @@ transition: "0.2s",
 
       {entries.map((e, i) => (
         <div key={i}>
-          {e.date} | {e.start} - {e.end} | {format(e.time)} - {e.note}
+          {e.worker} | {e.date} | {e.start} - {e.end} | {format(e.time)} - {e.note}
         </div>
       ))}
     </div>
   </div>
-);
-}
+      )
