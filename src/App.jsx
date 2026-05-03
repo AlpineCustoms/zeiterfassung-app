@@ -17,9 +17,12 @@ export default function App() {
   });
 
   const [note, setNote] = useState("");
+  const [isExpense, setIsExpense] = useState(false);
+const [amount, setAmount] = useState("");
   const [editStart, setEditStart] = useState("");
 const [editEnd, setEditEnd] = useState("");
-  const [showInput, setShowInput] = useState(false);
+const [showInput, setShowInput] = useState(false);
+ const [showExpenseInput, setShowExpenseInput] = useState(false);
 
   const workers = ["Simon", "Loris", "Dominik", "Jannic"];
 
@@ -78,8 +81,7 @@ const [editEnd, setEditEnd] = useState("");
     localStorage.setItem("running", "true");
     localStorage.setItem("startTime", String(now));
   };
-
-  const stop = () => {
+const stop = () => {
   const now = new Date();
 
   setRunning(false);
@@ -91,43 +93,63 @@ const [editEnd, setEditEnd] = useState("");
   localStorage.setItem("running", "false");
 };
 
-  const save = () => {
-    if (!startTime) return;
-
-    const now = new Date();
-const dateString = now.toLocaleDateString();
-
-const startDate = new Date(now);
-const [startHour, startMinute] = editStart.split(":");
-startDate.setHours(Number(startHour), Number(startMinute), 0, 0);
-
-const endDate = new Date(now);
-const [endHour, endMinute] = editEnd.split(":");
-endDate.setHours(Number(endHour), Number(endMinute), 0, 0);
-
-const correctedSeconds = Math.max(
-  0,
-  Math.floor((endDate - startDate) / 1000)
-);
-
-const newEntry = {
-  worker: workerName,
-  time: correctedSeconds,
-  note: note,
-  date: dateString,
-  start: editStart,
-  end: editEnd,
+const openExpense = () => {
+  setShowExpenseInput(true);
+  setShowInput(false);
 };
 
-    setEntries([newEntry, ...entries]);
-    setNote("");
-    setSeconds(0);
-    setShowInput(false);
-    setStartTime(null);
+  const save = () => {
+  if (!isExpense && !startTime) return;
 
-    localStorage.setItem("running", "false");
-    localStorage.removeItem("startTime");
-  };
+  const now = new Date();
+  let newEntry;
+
+  if (isExpense) {
+    newEntry = {
+      type: "expense",
+      worker: workerName,
+      amount: amount,
+      note: note,
+      date: now.toLocaleDateString(),
+    };
+  } else {
+    const dateString = now.toLocaleDateString();
+
+    const startDate = new Date(now);
+    const [startHour, startMinute] = editStart.split(":");
+    startDate.setHours(Number(startHour), Number(startMinute), 0, 0);
+
+    const endDate = new Date(now);
+    const [endHour, endMinute] = editEnd.split(":");
+    endDate.setHours(Number(endHour), Number(endMinute), 0, 0);
+
+    const correctedSeconds = Math.max(
+      0,
+      Math.floor((endDate - startDate) / 1000)
+    );
+
+    newEntry = {
+      type: "time",
+      worker: workerName,
+      time: correctedSeconds,
+      note: note,
+      date: dateString,
+      start: editStart,
+      end: editEnd,
+    };
+  }
+
+  setEntries([newEntry, ...entries]);
+  setNote("");
+  setAmount("");
+  setSeconds(0);
+  setShowInput(false);
+  setShowExpenseInput(false);
+  setStartTime(null);
+
+  localStorage.setItem("running", "false");
+  localStorage.removeItem("startTime");
+};
 
   const format = (s) => {
     const h = Math.floor(s / 3600);
@@ -139,12 +161,15 @@ const newEntry = {
   const exportCSV = (entries) => {
     const header = "Mitarbeiter;Datum;Start;Ende;Zeit (s);Beschreibung\n";
 
-    const rows = entries
-      .map(
-        (e) =>
-          `${e.worker};${e.date};${e.start};${e.end};${e.time};${e.note}`
-      )
-      .join("\n");
+   const rows = entries
+  .map((e) => {
+    if (e.type === "expense") {
+      return `${e.worker};${e.date};;;${e.amount} km;${e.note}`;
+    } else {
+      return `${e.worker};${e.date};${e.start};${e.end};${e.time};${e.note}`;
+    }
+  })
+  .join("\n");
 
     const csvContent = "\uFEFF" + header + rows;
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -192,8 +217,43 @@ const newEntry = {
       <div style={{ position: "relative", padding: 30 }}>
         <h1 style={{ fontSize: "48px" }}>Zeiterfassung</h1>
 
-        <h2>{format(seconds)}</h2>
+        {!isExpense && <h2>{format(seconds)}</h2>}
+<div style={{ marginBottom: 20 }}>
+  <button
+    onClick={() => {
+      setIsExpense(false);
+      setShowExpenseInput(false);
+    }}
+    style={{
+      marginRight: 10,
+      padding: "8px 12px",
+      borderRadius: "8px",
+      border: "none",
+      background: !isExpense ? "#4CAF50" : "#888",
+      color: "white",
+      cursor: "pointer",
+    }}
+  >
+    ⏱ Zeit
+  </button>
 
+  <button
+    onClick={() => {
+      setIsExpense(true);
+      openExpense();
+    }}
+    style={{
+      padding: "8px 12px",
+      borderRadius: "8px",
+      border: "none",
+      background: isExpense ? "#4CAF50" : "#888",
+      color: "white",
+      cursor: "pointer",
+    }}
+  >
+    💸 Spesen
+  </button>
+</div>
         <div style={{ marginBottom: 20 }}>
           <label style={{ marginRight: 10 }}>Mitarbeiter:</label>
           <select
@@ -214,41 +274,46 @@ const newEntry = {
           </select>
         </div>
 
-        <button
-          onClick={start}
-          disabled={running}
-          style={{
-            marginTop: 10,
-            padding: "10px 20px",
-            borderRadius: "10px",
-            border: "none",
-            background: running ? "#888" : "#4CAF50",
-            color: "white",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Start
-        </button>
+       {!isExpense && (
+  <button
+    onClick={start}
+    disabled={running}
+    style={{
+      marginTop: 10,
+      padding: "10px 20px",
+      borderRadius: "10px",
+      border: "none",
+      background: running ? "#888" : "#4CAF50",
+      color: "white",
+      fontWeight: "bold",
+      cursor: "pointer",
+    }}
+  >
+    Start
+  </button>
+)}
 
-        <button
-          onClick={stop}
-          disabled={!running}
-          style={{
-            marginLeft: 10,
-            padding: "10px 20px",
-            borderRadius: "10px",
-            border: "none",
-            background: !running ? "#888" : "#f44336",
-            color: "white",
-            fontWeight: "bold",
-            cursor: "pointer",
-          }}
-        >
-          Stop
-        </button>
+       {!isExpense && (
+  <button
+    onClick={stop}
+    disabled={!running}
+    style={{
+      marginLeft: 10,
+      padding: "10px 20px",
+      borderRadius: "10px",
+      border: "none",
+      background: !running ? "#888" : "#f44336",
+      color: "white",
+      fontWeight: "bold",
+      cursor: "pointer",
+    }}
+  >
+    Stop
+  </button>
+)}
 
-        {showInput && (
+     {/* ZEIT INPUT */}
+{showInput && !isExpense && (
   <div style={{ marginTop: 20 }}>
     <div style={{ marginBottom: 10 }}>
       <label>Start: </label>
@@ -268,6 +333,27 @@ const newEntry = {
 
     <input
       placeholder="Was hast du gemacht?"
+      value={note}
+      onChange={(e) => setNote(e.target.value)}
+    />
+
+    <button onClick={save} style={{ marginLeft: 10 }}>
+      Speichern
+    </button>
+  </div>
+)}
+{/* SPESEN INPUT */}
+{showExpenseInput && isExpense && (
+  <div style={{ marginTop: 20 }}>
+    <input
+      placeholder="Kilometer (z. B. 25)"
+      value={amount}
+      onChange={(e) => setAmount(e.target.value)}
+      style={{ marginRight: 10 }}
+    />
+
+    <input
+      placeholder="Bemerkung (z. B. Kunde XY)"
       value={note}
       onChange={(e) => setNote(e.target.value)}
     />
@@ -315,12 +401,34 @@ const newEntry = {
           🗑 Archiv löschen
         </button>
 
-        {entries.map((e, i) => (
-          <div key={i}>
-            {e.worker} | {e.date} | {e.start} - {e.end} | {format(e.time)} -{" "}
-            {e.note}
-          </div>
-        ))}
+      <h3 style={{ marginTop: 30 }}>Zeiterfassung Archiv</h3>
+
+{entries
+  .filter((e) => e.type !== "expense")
+  .map((e, i) => (
+    <div key={i}>
+      {e.worker} | {e.date} | {e.start} - {e.end} | {format(e.time)} - {e.note}
+    </div>
+  ))}
+<h3 style={{ marginTop: 30 }}>Übersicht</h3>
+
+<div>
+  Gesamtzeit:{" "}
+  {format(
+    entries
+      .filter((e) => e.type !== "expense")
+      .reduce((sum, e) => sum + Number(e.time || 0), 0)
+  )}
+</div>
+<h3 style={{ marginTop: 30 }}>Spesen Archiv</h3>
+
+{entries
+  .filter((e) => e.type === "expense")
+  .map((e, i) => (
+    <div key={i}>
+      💸 {e.worker} | {e.date} | {e.amount} km - {e.note}
+    </div>
+  ))}
       </div>
     </div>
   );
