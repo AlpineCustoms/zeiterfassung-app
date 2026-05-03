@@ -17,6 +17,8 @@ export default function App() {
   });
 
   const [note, setNote] = useState("");
+  const [editStart, setEditStart] = useState("");
+const [editEnd, setEditEnd] = useState("");
   const [showInput, setShowInput] = useState(false);
 
   const workers = ["Simon", "Loris", "Dominik", "Jannic"];
@@ -78,24 +80,44 @@ export default function App() {
   };
 
   const stop = () => {
-    setRunning(false);
-    setShowInput(true);
-    localStorage.setItem("running", "false");
-  };
+  const now = new Date();
+
+  setRunning(false);
+  setShowInput(true);
+
+  setEditStart(new Date(startTime).toTimeString().slice(0, 5));
+  setEditEnd(now.toTimeString().slice(0, 5));
+
+  localStorage.setItem("running", "false");
+};
 
   const save = () => {
     if (!startTime) return;
 
     const now = new Date();
+const dateString = now.toLocaleDateString();
 
-    const newEntry = {
-      worker: workerName,
-      time: seconds,
-      note: note,
-      date: now.toLocaleDateString(),
-      start: new Date(startTime).toLocaleTimeString(),
-      end: now.toLocaleTimeString(),
-    };
+const startDate = new Date(now);
+const [startHour, startMinute] = editStart.split(":");
+startDate.setHours(Number(startHour), Number(startMinute), 0, 0);
+
+const endDate = new Date(now);
+const [endHour, endMinute] = editEnd.split(":");
+endDate.setHours(Number(endHour), Number(endMinute), 0, 0);
+
+const correctedSeconds = Math.max(
+  0,
+  Math.floor((endDate - startDate) / 1000)
+);
+
+const newEntry = {
+  worker: workerName,
+  time: correctedSeconds,
+  note: note,
+  date: dateString,
+  start: editStart,
+  end: editEnd,
+};
 
     setEntries([newEntry, ...entries]);
     setNote("");
@@ -227,12 +249,34 @@ export default function App() {
         </button>
 
         {showInput && (
-          <div style={{ marginTop: 20 }}>
-            <input
-              placeholder="Was hast du gemacht?"
-              value={note}
-              onChange={(e) => setNote(e.target.value)}
-            />
+  <div style={{ marginTop: 20 }}>
+    <div style={{ marginBottom: 10 }}>
+      <label>Start: </label>
+      <input
+        type="time"
+        value={editStart}
+        onChange={(e) => setEditStart(e.target.value)}
+      />
+
+      <label style={{ marginLeft: 10 }}>Ende: </label>
+      <input
+        type="time"
+        value={editEnd}
+        onChange={(e) => setEditEnd(e.target.value)}
+      />
+    </div>
+
+    <input
+      placeholder="Was hast du gemacht?"
+      value={note}
+      onChange={(e) => setNote(e.target.value)}
+    />
+
+    <button onClick={save} style={{ marginLeft: 10 }}>
+      Speichern
+    </button>
+  </div>
+)}
             <button onClick={save} style={{ marginLeft: 10 }}>
               Speichern
             </button>
