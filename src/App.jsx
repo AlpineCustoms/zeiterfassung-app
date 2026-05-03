@@ -277,11 +277,6 @@ const newEntry = {
     </button>
   </div>
 )}
-            <button onClick={save} style={{ marginLeft: 10 }}>
-              Speichern
-            </button>
-          </div>
-        )}
 
         <h3 style={{ marginTop: 30 }}>Archiv</h3>
 
