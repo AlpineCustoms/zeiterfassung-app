@@ -24,7 +24,7 @@ const [editEnd, setEditEnd] = useState("");
 const [showInput, setShowInput] = useState(false);
  const [showExpenseInput, setShowExpenseInput] = useState(false);
 
-  const workers = ["Simon", "Loris", "Dominik", "Jannic"];
+  const workers = ["Simon", "Loris", "Dominik", "Jannic", "Joelle", "Joasch" ];
 
   useEffect(() => {
     const savedRunning = localStorage.getItem("running") === "true";
