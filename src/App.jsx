@@ -180,15 +180,18 @@ if (newEntry.type === "expense") {
   });
 }
   setNote("");
-  setAmount("");
+setAmount("");
+setShowInput(false);
+setShowExpenseInput(false);
+
+if (!isExpense) {
   setSeconds(0);
-  setShowInput(false);
-  setShowExpenseInput(false);
   setStartTime(null);
+  setRunning(false);
 
   localStorage.setItem("running", "false");
   localStorage.removeItem("startTime");
-};
+}
 
   const format = (s) => {
     const h = Math.floor(s / 3600);
