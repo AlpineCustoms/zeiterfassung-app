@@ -1,6 +1,22 @@
 import { useState, useEffect } from "react";
 import logo from "./assets/logo.jpeg";
 
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybGc1dkBVYs9wfOtwa5x8D-0tZ31MYxjBD3FOInxOG2nrc6fzlCTGWRf33TwuX5Y5TCw/exec";
+
+async function sendToGoogleSheet(data) {
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL, {
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    return await response.json();
+  } catch (error) {
+    console.error("Google Sheet Fehler:", error);
+    return { status: "error", message: error.message };
+  }
+}
+
 export default function App() {
   const [running, setRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -140,6 +156,29 @@ const openExpense = () => {
   }
 
   setEntries([newEntry, ...entries]);
+  // Zusätzlich in Google Sheet speichern
+if (newEntry.type === "time") {
+  sendToGoogleSheet({
+    type: "time",
+    person: newEntry.worker,
+    date: newEntry.date,
+    start: newEntry.start,
+    end: newEntry.end,
+    seconds: newEntry.time,
+    note: newEntry.note,
+  });
+}
+
+if (newEntry.type === "expense") {
+  sendToGoogleSheet({
+    type: "expense",
+    person: newEntry.worker,
+    date: newEntry.date,
+    amount: newEntry.amount,
+    km: "",
+    note: newEntry.note,
+  });
+}
   setNote("");
   setAmount("");
   setSeconds(0);
