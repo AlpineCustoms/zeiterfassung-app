@@ -191,7 +191,10 @@ if (!isExpense) {
 
   localStorage.setItem("running", "false");
   localStorage.removeItem("startTime");
+} else {
+  setIsExpense(false);
 }
+};
 
   const format = (s) => {
     const h = Math.floor(s / 3600);
