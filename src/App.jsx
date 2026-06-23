@@ -50,6 +50,7 @@ const [amount, setAmount] = useState("");
 const [editEnd, setEditEnd] = useState("");
 const [showInput, setShowInput] = useState(false);
  const [showExpenseInput, setShowExpenseInput] = useState(false);
+ 
 const [activeTab, setActiveTab] = useState("time");
 const [equityData, setEquityData] = useState([]);
   const workers = ["Simon", "Loris", "Dominik", "Jannic", "Joelle", "Joasch" ];
@@ -251,7 +252,7 @@ if (!isExpense) {
     }
   };
 
-return (
+  return (
   <div
     style={{
       position: "relative",
@@ -465,6 +466,31 @@ return (
       <button onClick={() => setActiveTab("time")}>⏱<br />Zeiterfassung</button>
       <button onClick={() => setActiveTab("overview")}>📊<br />Übersicht</button>
       <button onClick={() => setActiveTab("sheets")}>📄<br />Google Sheets</button>
+      <div
+  style={{
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: "flex",
+    justifyContent: "space-around",
+    padding: "10px",
+    background: "#111",
+    borderTop: "1px solid #333",
+  }}
+>
+  <button onClick={() => setActiveTab("time")}>
+    ⏱ Zeiterfassung
+  </button>
+
+  <button onClick={() => setActiveTab("overview")}>
+    📊 Übersicht
+  </button>
+
+  <button onClick={() => setActiveTab("sheets")}>
+    📄 Google Sheets
+  </button>
+</div>
     </div>
   </div>
 );
