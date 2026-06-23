@@ -303,3 +303,4 @@ const [equityData, setEquityData] = useState([]);
     </div>
   </div>
 );
+}
