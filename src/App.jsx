@@ -16,7 +16,18 @@ async function sendToGoogleSheet(data) {
     return { status: "error", message: error.message };
   }
 }
+async function loadEquity() {
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL);
+    const data = await response.json();
 
+    if (data.status === "ok") {
+      setEquityData(data.equity || []);
+    }
+  } catch (error) {
+    console.error("Equity laden fehlgeschlagen:", error);
+  }
+}
 export default function App() {
   const [running, setRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -39,7 +50,8 @@ const [amount, setAmount] = useState("");
 const [editEnd, setEditEnd] = useState("");
 const [showInput, setShowInput] = useState(false);
  const [showExpenseInput, setShowExpenseInput] = useState(false);
-
+const [activeTab, setActiveTab] = useState("time");
+const [equityData, setEquityData] = useState([]);
   const workers = ["Simon", "Loris", "Dominik", "Jannic", "Joelle", "Joasch" ];
 
   useEffect(() => {
@@ -84,6 +96,10 @@ const [showInput, setShowInput] = useState(false);
   useEffect(() => {
     localStorage.setItem("entries", JSON.stringify(entries));
   }, [entries]);
+
+  useEffect(() => {
+  loadEquity();
+}, []);
 
   useEffect(() => {
     localStorage.setItem("workerName", workerName);
