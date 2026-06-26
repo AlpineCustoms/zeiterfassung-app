@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
 import logo from "./assets/logo.jpeg";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
 
 const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybGc1dkBVYs9wfOtwa5x8D-0tZ31MYxjBD3FOInxOG2nrc6fzlCTGWRf33TwuX5Y5TCw/exec";
 
