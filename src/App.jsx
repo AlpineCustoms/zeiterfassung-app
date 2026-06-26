@@ -381,18 +381,25 @@ if (!isExpense) {
               </button>
             </div>
           )}
-<div style={{ marginTop: 30 }}>
+<div
+  style={{
+    marginTop: 30,
+    display: "flex",
+    flexDirection: "column",
+    gap: 12,
+  }}
+>
   <button
     onClick={() => exportCSV(entries)}
     style={{
-      padding: "10px 20px",
-      borderRadius: "10px",
-      border: "none",
-      background: "#2196F3",
+      width: "100%",
+      padding: "14px 18px",
+      borderRadius: "14px",
+      border: "1px solid rgba(255,255,255,0.25)",
+      background: "rgba(255,255,255,0.12)",
       color: "white",
       fontWeight: "bold",
       cursor: "pointer",
-      marginRight: 10,
     }}
   >
     📊 Archiv exportieren
@@ -401,11 +408,12 @@ if (!isExpense) {
   <button
     onClick={clearEntries}
     style={{
-      padding: "10px 20px",
-      borderRadius: "10px",
-      border: "none",
-      background: "#e53935",
-      color: "white",
+      width: "100%",
+      padding: "14px 18px",
+      borderRadius: "14px",
+      border: "1px solid rgba(255,255,255,0.25)",
+      background: "rgba(255,255,255,0.08)",
+      color: "#ffb3b3",
       fontWeight: "bold",
       cursor: "pointer",
     }}
