@@ -466,30 +466,67 @@ if (!isExpense) {
       <button onClick={() => setActiveTab("time")}>⏱<br />Zeiterfassung</button>
       <button onClick={() => setActiveTab("overview")}>📊<br />Übersicht</button>
       <button onClick={() => setActiveTab("sheets")}>📄<br />Google Sheets</button>
-      <div
+    <div
   style={{
     position: "fixed",
     bottom: 0,
     left: 0,
     right: 0,
     display: "flex",
-    justifyContent: "space-around",
-    padding: "10px",
     background: "#111",
     borderTop: "1px solid #333",
   }}
 >
-  <button onClick={() => setActiveTab("time")}>
-    ⏱ Zeiterfassung
-  </button>
+  <button
+  onClick={() => setActiveTab("time")}
+  style={{
+    flex: 1,
+    padding: "12px 8px",
+    background: activeTab === "time" ? "#4CAF50" : "transparent",
+    color: "white",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flex: 1,
+    height: 70,
+  }}
+>
+  ⏱<br />Zeiterfassung
+</button>
 
-  <button onClick={() => setActiveTab("overview")}>
-    📊 Übersicht
-  </button>
+<button
+  onClick={() => setActiveTab("overview")}
+  style={{
+    flex: 1,
+    padding: "12px 8px",
+    background: activeTab === "overview" ? "#4CAF50" : "transparent",
+    color: "white",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flex: 1,
+    height: 70,
+  }}
+>
+  📊<br />Übersicht
+</button>
 
-  <button onClick={() => setActiveTab("sheets")}>
-    📄 Google Sheets
-  </button>
+<button
+  onClick={() => setActiveTab("sheets")}
+  style={{
+    flex: 1,
+    padding: "12px 8px",
+    background: activeTab === "sheets" ? "#4CAF50" : "transparent",
+    color: "white",
+    border: "none",
+    fontWeight: "bold",
+    cursor: "pointer",
+    flex: 1,
+    height: 70,
+  }}
+>
+  📄<br />Google Sheets
+</button>
 </div>
     </div>
   </div>
