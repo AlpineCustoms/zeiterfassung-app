@@ -23,18 +23,7 @@ async function sendToGoogleSheet(data) {
     return { status: "error", message: error.message };
   }
 }
-async function loadEquity() {
-  try {
-    const response = await fetch(GOOGLE_SCRIPT_URL);
-    const data = await response.json();
 
-    if (data.status === "ok") {
-      setEquityData(data.equity || []);
-    }
-  } catch (error) {
-    console.error("Equity laden fehlgeschlagen:", error);
-  }
-}
 export default function App() {
   const [running, setRunning] = useState(false);
   const [startTime, setStartTime] = useState(null);
@@ -61,6 +50,28 @@ const [showInput, setShowInput] = useState(false);
 const [activeTab, setActiveTab] = useState("time");
 const [equityData, setEquityData] = useState([]);
   const workers = ["Simon", "Loris", "Dominik", "Jannic", "Joelle", "Joasch" ];
+  
+  const COLORS = [
+  "#D62828", // Alpine Rot
+  "#444444", // Dunkelgrau
+  "#777777", // Hellgrau
+  "#AAAAAA", // Silber
+  "#555555",
+  "#888888",
+];
+
+async function loadEquity() {
+  try {
+    const response = await fetch(GOOGLE_SCRIPT_URL);
+    const data = await response.json();
+
+    if (data.status === "ok") {
+      setEquityData(data.equity || []);
+    }
+  } catch (error) {
+    console.error("Equity laden fehlgeschlagen:", error);
+  }
+}
 
   useEffect(() => {
     const savedRunning = localStorage.getItem("running") === "true";
@@ -219,7 +230,13 @@ if (!isExpense) {
   setIsExpense(false);
 }
 };
-
+const chartData = equityData
+  .filter((item) => item.Person && item.Equity !== "")
+  .map((item) => ({
+    name: item.Person,
+    value: Number(item.Equity || 0) * 100,
+  }));
+  const percent = (value) => `${Number(value || 0).toFixed(1)}%`;
   const format = (s) => {
     const h = Math.floor(s / 3600);
     const m = Math.floor((s % 3600) / 60);
@@ -452,6 +469,45 @@ if (!isExpense) {
 
       {activeTab === "overview" && (
         <>
+        <>
+  <h1 style={{ fontSize: "42px" }}>Übersicht</h1>
+
+  <div
+    style={{
+      marginTop: 20,
+      padding: 20,
+      borderRadius: 18,
+      background: "rgba(20,20,20,0.85)",
+      border: "1px solid rgba(255,255,255,0.12)",
+    }}
+  >
+    <h2 style={{ marginTop: 0 }}>Equity</h2>
+
+    <div style={{ width: "100%", height: 260 }}>
+      <ResponsiveContainer>
+        <PieChart>
+          <Pie
+            data={chartData}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={65}
+            outerRadius={100}
+            paddingAngle={3}
+          >
+            {chartData.map((entry, index) => (
+              <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+            ))}
+          </Pie>
+          <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
+        </PieChart>
+      </ResponsiveContainer>
+    </div>
+
+    <button onClick={loadEquity}>
+      🔄 Aktualisieren
+    </button>
+  </div>
+</>
           <h1 style={{ fontSize: "42px" }}>Übersicht</h1>
           <h2>Equity</h2>
 
@@ -459,32 +515,32 @@ if (!isExpense) {
             🔄 Aktualisieren
           </button>
 
-          {equityData.map((item, index) => (
-            <div key={index} style={{ marginBottom: 14 }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <strong>{item.Person}</strong>
-                <strong>{percent(item.Equity)}</strong>
-              </div>
+          {chartData.map((item, index) => (
+  <div key={item.name} style={{ marginBottom: 14 }}>
+    <div style={{ display: "flex", justifyContent: "space-between" }}>
+      <strong>{item.name}</strong>
+      <strong>{item.value.toFixed(1)}%</strong>
+    </div>
 
-              <div
-                style={{
-                  height: 18,
-                  background: "rgba(255,255,255,0.2)",
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  marginTop: 5,
-                }}
-              >
-                <div
-                  style={{
-                    height: "100%",
-                    width: percent(item.Equity),
-                    background: "#4CAF50",
-                  }}
-                />
-              </div>
-            </div>
-          ))}
+    <div
+      style={{
+        height: 18,
+        background: "rgba(255,255,255,0.15)",
+        borderRadius: 20,
+        overflow: "hidden",
+        marginTop: 6,
+      }}
+    >
+      <div
+        style={{
+          height: "100%",
+          width: `${item.value}%`,
+          background: "#D62828",
+        }}
+      />
+    </div>
+  </div>
+))}
         </>
       )}
 
