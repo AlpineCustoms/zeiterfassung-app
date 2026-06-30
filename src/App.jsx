@@ -504,84 +504,47 @@ const chartData = equityData
         </>
       )}
 
-      {activeTab === "overview" && (
-        <>
-        <>
-  <h1 style={{ fontSize: "42px" }}>Übersicht</h1>
-
-  <div
-    style={{
-      marginTop: 20,
-      padding: 20,
-      borderRadius: 18,
-      background: "rgba(20,20,20,0.85)",
-      border: "1px solid rgba(255,255,255,0.12)",
-    }}
-  >
-    <h2 style={{ marginTop: 0 }}>Equity</h2>
-
-    <div style={{ width: "100%", height: 260 }}>
-      <ResponsiveContainer>
-        <PieChart>
-          <Pie
-            data={chartData}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={65}
-            outerRadius={100}
-            paddingAngle={3}
-          >
-            {chartData.map((entry, index) => (
-              <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-          <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
-
-    <button onClick={loadEquity}>
-      🔄 Aktualisieren
-    </button>
-  </div>
-</>
-          <h1 style={{ fontSize: "42px" }}>Übersicht</h1>
-          <h2>Equity</h2>
-
-          <button onClick={loadEquity} style={{ marginBottom: 20 }}>
-            🔄 Aktualisieren
-          </button>
-
-          {chartData.map((item, index) => (
-  <div key={item.name} style={{ marginBottom: 14 }}>
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <strong>{item.name}</strong>
-      <strong>{item.value.toFixed(1)}%</strong>
-    </div>
+     {activeTab === "overview" && (
+  <>
+    <h1 style={{ fontSize: "42px" }}>Übersicht</h1>
 
     <div
       style={{
-        height: 18,
-        background: "rgba(255,255,255,0.15)",
-        borderRadius: 20,
-        overflow: "hidden",
-        marginTop: 6,
+        marginTop: 20,
+        padding: 20,
+        borderRadius: 18,
+        background: "rgba(20,20,20,0.85)",
+        border: "1px solid rgba(255,255,255,0.12)",
       }}
     >
-      <div
-        style={{
-          height: "100%",
-          width: `${item.value}%`,
-          background: "#D62828",s
-        }}
-      />
-    </div>
-  </div>
-))}
-        </>
-      )}
+      <h2 style={{ marginTop: 0 }}>Equity</h2>
 
-     {activeTab === "sheets" && (
+      <div style={{ width: "100%", height: 260 }}>
+        <ResponsiveContainer>
+          <PieChart>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={65}
+              outerRadius={100}
+              paddingAngle={3}
+            >
+              {chartData.map((entry, index) => (
+                <Cell key={entry.name} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+            <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+
+      <button onClick={loadEquity}>🔄 Aktualisieren</button>
+    </div>
+  </>
+)}
+
+{activeTab === "sheets" && (
   <>
     <h1 style={{ fontSize: "42px" }}>Google Sheets</h1>
 
@@ -608,6 +571,8 @@ const chartData = equityData
   </>
 )}
 
+</div>
+
 <div
   style={{
     position: "fixed",
@@ -619,72 +584,54 @@ const chartData = equityData
     borderTop: "1px solid #333",
   }}
 >
-      <button onClick={() => setActiveTab("time")}>⏱<br />Zeiterfassung</button>
-      <button onClick={() => setActiveTab("overview")}>📊<br />Übersicht</button>
-      <button onClick={() => setActiveTab("sheets")}>📄<br />Google Sheets</button>
-    <div
-  style={{
-    position: "fixed",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    display: "flex",
-    background: "#111",
-    borderTop: "1px solid #333",
-  }}
->
   <button
-  onClick={() => setActiveTab("time")}
-  style={{
-    flex: 1,
-    padding: "12px 8px",
-    background: activeTab === "time" ? "#4CAF50" : "transparent",
-    color: "white",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-    flex: 1,
-    height: 70,
-  }}
->
-  ⏱<br />Zeiterfassung
-</button>
+    onClick={() => setActiveTab("time")}
+    style={{
+      flex: 1,
+      padding: "12px 8px",
+      background: activeTab === "time" ? "#4CAF50" : "transparent",
+      color: "white",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer",
+      height: 70,
+    }}
+  >
+    ⏱<br />Zeiterfassung
+  </button>
 
-<button
-  onClick={() => setActiveTab("overview")}
-  style={{
-    flex: 1,
-    padding: "12px 8px",
-    background: activeTab === "overview" ? "#4CAF50" : "transparent",
-    color: "white",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-    flex: 1,
-    height: 70,
-  }}
->
-  📊<br />Übersicht
-</button>
+  <button
+    onClick={() => setActiveTab("overview")}
+    style={{
+      flex: 1,
+      padding: "12px 8px",
+      background: activeTab === "overview" ? "#4CAF50" : "transparent",
+      color: "white",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer",
+      height: 70,
+    }}
+  >
+    📊<br />Übersicht
+  </button>
 
-<button
-  onClick={() => setActiveTab("sheets")}
-  style={{
-    flex: 1,
-    padding: "12px 8px",
-    background: activeTab === "sheets" ? "#4CAF50" : "transparent",
-    color: "white",
-    border: "none",
-    fontWeight: "bold",
-    cursor: "pointer",
-    flex: 1,
-    height: 70,
-  }}
->
-  📄<br />Google Sheets
-</button>
+  <button
+    onClick={() => setActiveTab("sheets")}
+    style={{
+      flex: 1,
+      padding: "12px 8px",
+      background: activeTab === "sheets" ? "#4CAF50" : "transparent",
+      color: "white",
+      border: "none",
+      fontWeight: "bold",
+      cursor: "pointer",
+      height: 70,
+    }}
+  >
+    📄<br />Google Sheets
+  </button>
 </div>
-    </div>
-  </div>
+</div>
 );
 }
