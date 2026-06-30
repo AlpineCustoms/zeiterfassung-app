@@ -275,6 +275,43 @@ const chartData = equityData
       setEntries([]);
     }
   };
+  const googleSheets = [
+  {
+    name: "Master-Aufträge",
+    icon: "📋",
+    url: "https://docs.google.com/spreadsheets/d/1aI3pfl4L-rmJwTtmnpEH04z3WkF6UsIjtUuW4OHD1TY/edit?usp=sharing",
+  },
+  {
+  name: "Lead-Tracker",
+  icon: "🎯",
+  url: "https://docs.google.com/spreadsheets/d/1vJmvnhfoqRYlbH6tPOOaMIVTxDtSpyLXaH3-rC8J-do/edit?usp=sharing",
+},
+  {
+  name: "Einkauf & Lager",
+  icon: "📦",
+  url: "https://docs.google.com/spreadsheets/d/13KLIOb-EQuLNnMkOewHEV9qsTXQAQa-BUMEpA10L0mg/edit?usp=sharing",
+},
+  {
+  name: "Team ToDos",
+  icon: "✅",
+  url: "https://docs.google.com/spreadsheets/d/10hjUVodemwm9mJc-jBNQt1RTV-7C5-lAGCX32SZFMH0/edit?usp=sharing",
+},
+  {
+  name: "Preiskalkulator",
+  icon: "🧮",
+  url: "https://docs.google.com/spreadsheets/d/15jRL-AXYkaYlRQ3G-SvAeb6zklxfVDOiEe5zhHBmy3g/edit?usp=sharing",
+},
+{
+  name: "Drucker Wartung",
+  icon: "🛠️",
+  url: "https://docs.google.com/spreadsheets/d/1-Zu4shSE4NTftDeTRWlIJybkSfX_bbxO-RlsPScdWW4/edit?usp=sharing",
+},
+{
+  name: "Social Media",
+  icon: "📱",
+  url: "https://docs.google.com/spreadsheets/d/14f1ZFda-rkR-hXflJ3YGdb8YqkcX8cN5ayVOVqnc5oA/edit?usp=sharing",
+},
+];
 
   return (
   <div
@@ -535,7 +572,7 @@ const chartData = equityData
         style={{
           height: "100%",
           width: `${item.value}%`,
-          background: "#D62828",
+          background: "#D62828",s
         }}
       />
     </div>
@@ -544,26 +581,32 @@ const chartData = equityData
         </>
       )}
 
-      {activeTab === "sheets" && (
-        <>
-          <h1 style={{ fontSize: "42px" }}>Google Sheets</h1>
-          <p>Hier kommen später die Links zu den bearbeitbaren Sheets rein.</p>
-        </>
-      )}
-    </div>
+     {activeTab === "sheets" && (
+  <>
+    <h1 style={{ fontSize: "42px" }}>Google Sheets</h1>
 
-    <div
-      style={{
-        position: "fixed",
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: "flex",
-        justifyContent: "space-around",
-        background: "rgba(0,0,0,0.85)",
-        padding: "12px 0",
-        borderTop: "1px solid rgba(255,255,255,0.2)",
-      }}
+    {googleSheets.map((sheet) => (
+      <button
+        key={sheet.name}
+        onClick={() => window.open(sheet.url, "_blank")}
+        style={{
+          width: "100%",
+          padding: "18px",
+          marginBottom: "12px",
+          borderRadius: "12px",
+          border: "none",
+          background: "#D62828",
+          color: "white",
+          fontSize: "18px",
+          fontWeight: "bold",
+          cursor: "pointer",
+        }}
+      >
+        {sheet.icon} {sheet.name}
+      </button>
+    ))}
+  </>
+)}
     >
       <button onClick={() => setActiveTab("time")}>⏱<br />Zeiterfassung</button>
       <button onClick={() => setActiveTab("overview")}>📊<br />Übersicht</button>
