@@ -538,34 +538,37 @@ const chartData = equityData
           </PieChart>
         </ResponsiveContainer>
       </div>
+
       {chartData.map((item) => (
-  <div key={item.name} style={{ marginBottom: 14 }}>
-    <div style={{ display: "flex", justifyContent: "space-between" }}>
-      <strong>{item.name}</strong>
-      <strong>{item.value.toFixed(1)}%</strong>
-    </div>
+        <div key={item.name} style={{ marginBottom: 14 }}>
+          <div style={{ display: "flex", justifyContent: "space-between" }}>
+            <strong>{item.name}</strong>
+            <strong>{item.value.toFixed(1)}%</strong>
+          </div>
 
-    <div
-      style={{
-        height: 18,
-        background: "rgba(255,255,255,0.15)",
-        borderRadius: 20,
-        overflow: "hidden",
-        marginTop: 6,
-      }}
-    >
-      <div
-        style={{
-          height: "100%",
-          width: `${item.value}%`,
-          background: "#D62828",
-        }}
-      />
-    </div>
-  </div>
-))}
+          <div
+            style={{
+              height: 18,
+              background: "rgba(255,255,255,0.15)",
+              borderRadius: 20,
+              overflow: "hidden",
+              marginTop: 6,
+            }}
+          >
+            <div
+              style={{
+                height: "100%",
+                width: `${item.value}%`,
+                background: "#D62828",
+              }}
+            />
+          </div>
+        </div>
+      ))}
 
-      <button onClick={loadEquity}>🔄 Aktualisieren</button>
+      <button onClick={loadEquity} style={{ marginTop: 20 }}>
+        🔄 Aktualisieren
+      </button>
     </div>
   </>
 )}
