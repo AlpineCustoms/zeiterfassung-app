@@ -607,7 +607,18 @@ const chartData = equityData
     ))}
   </>
 )}
-    >
+
+<div
+  style={{
+    position: "fixed",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    display: "flex",
+    background: "#111",
+    borderTop: "1px solid #333",
+  }}
+>
       <button onClick={() => setActiveTab("time")}>⏱<br />Zeiterfassung</button>
       <button onClick={() => setActiveTab("overview")}>📊<br />Übersicht</button>
       <button onClick={() => setActiveTab("sheets")}>📄<br />Google Sheets</button>
